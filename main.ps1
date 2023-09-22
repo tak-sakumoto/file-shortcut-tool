@@ -1,6 +1,7 @@
 # Arguments
 param (
-    [string]$listPath
+    [string]$listPath,
+    [string]$defaultParent = ".\"
 )
 
 # Function to create a shortcut
@@ -26,6 +27,6 @@ $paths = Import-Csv -Path $listPath
 # Create shortcuts for each path
 foreach ($path in $paths) {
     $targetPath = $path.Path
-    $shortcutPath = (Split-Path -Leaf $targetPath) + ".lnk"
+    $shortcutPath = $defaultParent + "\" + (Split-Path -Leaf $targetPath) + ".lnk"
     Create-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
 }
