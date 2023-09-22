@@ -9,10 +9,15 @@ function Create-Shortcut {
         [string]$targetPath,
         [string]$shortcutPath
     )
-    $WshShell = New-Object -ComObject WScript.Shell
-    $shortcut = $WshShell.CreateShortcut($shortcutPath)
-    $shortcut.TargetPath = $targetPath
-    $shortcut.Save()
+    try {
+        $WshShell = New-Object -ComObject WScript.Shell
+        $shortcut = $WshShell.CreateShortcut($shortcutPath)
+        $shortcut.TargetPath = $targetPath
+        $shortcut.Save()
+    } catch {
+        Write-Host "Failed to create shortcut: $targetPath"
+        Write-Host "Error:" + $_.Exception.Message
+    }
 }
 
 # Get listed paths
