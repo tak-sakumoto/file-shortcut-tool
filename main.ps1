@@ -1,6 +1,7 @@
 # Arguments
 param (
-    [string]$listPath
+    [string]$listPath,
+    [string]$defaultParent = ".\"
 )
 
 # Function to create a shortcut
@@ -14,18 +15,23 @@ function Create-Shortcut {
         $shortcut = $WshShell.CreateShortcut($shortcutPath)
         $shortcut.TargetPath = $targetPath
         $shortcut.Save()
+        Write-Host "Created a shortcut: $shortcutPath -> $targetPath"
     } catch {
-        Write-Host "Failed to create shortcut: $targetPath"
+        Write-Host "Failed to create shortcut: $shortcutPath -> $targetPath"
         Write-Host "Error:" + $_.Exception.Message
     }
 }
 
 # Get listed paths
-$paths = Import-Csv -Path $listPath
+$data = Import-Csv -Path $listPath
 
 # Create shortcuts for each path
-foreach ($path in $paths) {
-    $targetPath = $path.Path
-    $shortcutPath = (Split-Path -Leaf $targetPath) + ".lnk"
+foreach ($line in $data) {
+    $targetPath = $line.Path
+    $parent = $line.Parent
+    if([string]::IsNullOrEmpty($parent)){
+        $parent = $defaultParent
+    }
+    $shortcutPath = $parent + "\" + (Split-Path -Leaf $targetPath) + ".lnk"
     Create-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
 }
