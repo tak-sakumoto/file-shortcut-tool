@@ -1,4 +1,4 @@
-Path,Parent
-C:\Windows,
-C:\Program Files,
-C:\Program Files (x86),
+Path,Parent,Name
+C:\Windows,,
+C:\Program Files,,program_files
+C:\Program Files (x86),,program_files_x86
