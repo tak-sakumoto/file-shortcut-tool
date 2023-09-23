@@ -5,7 +5,7 @@ param (
 )
 
 # Function to create a shortcut
-function Create-Shortcut {
+function New-Shortcut {
     param (
         [string]$targetPath,
         [string]$shortcutPath
@@ -33,5 +33,5 @@ foreach ($line in $data) {
         $parent = $defaultParent
     }
     $shortcutPath = $parent + "\" + (Split-Path -Leaf $targetPath) + ".lnk"
-    Create-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
+    New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
 }
