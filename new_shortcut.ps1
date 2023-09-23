@@ -12,6 +12,6 @@ function New-Shortcut {
         Write-Host "Created a shortcut: $shortcutPath -> $targetPath"
     } catch {
         Write-Host "Failed to create shortcut: $shortcutPath -> $targetPath"
-        Write-Host "Error:" + $_.Exception.Message
+        Write-Host "Error: $_.Exception.Message"
     }
 }
