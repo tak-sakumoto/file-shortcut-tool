@@ -16,8 +16,8 @@ This repository provides a tool for creating shortcuts to file paths listed in a
 
 | Argument | Required | Default | Explanation |
 |-|:-:|-|-|
-| `-listPath \<path>` | o | - | A path to a list CSV file that describes the targets of the shortcut creation |
-| `-defaultParent \<path>` | x | `.\` | A default path to save shortcuts |
+| `-listPath <path>` | o | - | A path to a list CSV file that describes the targets of the shortcut creation |
+| `-defaultParent <path>` | x | `.\` | A default path to save shortcuts |
 
 ### List (CSV)
 
