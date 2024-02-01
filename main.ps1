@@ -19,6 +19,12 @@ $ps_env_var_pattern = '\$env:([A-Za-z0-9_]*)'
 foreach ($line in $data) {
     $targetPath = $line.Path
     
+    # Create the shortcut
+    $urlShortcutFlg = $false
+    if ($targetPath -like "http://*" -or $targetPath -like "https://*") {
+        $urlShortcutFlg = $true
+    }
+
     # Replace environment variables in paths retrieved from CSV files with values
     foreach (
         $pattern in @($env_var_pattern, $ps_env_var_pattern)
@@ -27,7 +33,7 @@ foreach ($line in $data) {
     }
 
     # Do not create the shortcut if the target path is invalid 
-    if (!(Test-Path -Path $targetPath)) {
+    if (!($urlShortcutFlg) -and !(Test-Path -Path $targetPath)) {
         Write-Host "Error: invalid path $targetPath"
         continue
     }
@@ -49,6 +55,6 @@ foreach ($line in $data) {
     # Get the shortcut path
     $shortcutPath = $parent + "\" + $name + ".lnk"
 
-    # Create the shoutcut
+    # Create the shortcut
     New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
 }
