@@ -9,6 +9,27 @@ param (
 . .\Set-RegexEnvVars.ps1
 . .\Get-ShortcutPath.ps1
 
+# Check if the list path is empty
+if ([string]::IsNullOrEmpty($listCsv)) {
+    # Display an error message and exit with a non-zero code
+    Write-Host "Error: CSV file parameter is empty"
+    exit 1
+}
+
+# Check if the list path is invalid
+if (!(Test-Path $listCsv)) {
+    # Display an error message and exit with a non-zero code
+    Write-Host "Error: $listCsv does not exist"
+    exit 1
+}
+
+# Check if the default parent path is invalid
+if (!(Test-Path $defaultParent)) {
+    # Display an error message and exit with a non-zero code
+    Write-Host "Error: $defaultParent does not exist"
+    exit 1
+}
+
 # Get listed paths
 $data = Import-Csv -Path $listPath
 
@@ -55,3 +76,6 @@ foreach ($line in $data) {
     # Create the shortcut
     New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
 }
+
+# Exit with a success code
+exit 0
