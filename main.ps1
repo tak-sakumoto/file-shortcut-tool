@@ -34,7 +34,7 @@ foreach ($line in $data) {
 
     # Do not create the shortcut if the target path is invalid 
     if (!($urlShortcutFlg) -and !(Test-Path -Path $targetPath)) {
-        Write-Host "Error: invalid path $targetPath"
+        Write-Host "Error: invalid target path $targetPath"
         continue
     }
 
@@ -45,6 +45,9 @@ foreach ($line in $data) {
         $parent = $defaultParent
     }
 
+    # Convert the parent path to an absolute path
+    $parent = (Resolve-Path -Path $parent).Path
+
     # Get the file name if it is listed in the CSV file
     $name = $line.Name
     # Get the leaf of the target path if it is not listed in the CSV file
@@ -54,6 +57,12 @@ foreach ($line in $data) {
 
     # Get the shortcut path
     $shortcutPath = $parent + "\" + $name + ".lnk"
+
+    # Skip creating a shortcut if the path is invalid
+    if (!(Test-Path -Path $shortcutPath -IsValid)) {
+        Write-Host "Error: invalid shortcut file path $shortcutPath"
+        continue
+    }
 
     # Create the shortcut
     New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath

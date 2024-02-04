@@ -6,7 +6,6 @@ function New-Shortcut {
     )
     try {
         $WshShell = New-Object -ComObject WScript.Shell
-        $shortcutPath = Join-Path -Path $PSScriptRoot -ChildPath $shortcutPath
         $shortcut = $WshShell.CreateShortcut($shortcutPath)
         $shortcut.TargetPath = $targetPath
         $shortcut.Save()
