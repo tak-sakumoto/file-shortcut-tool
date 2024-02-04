@@ -46,7 +46,6 @@ foreach ($line in $data) {
     $shortcutPath = Get-ShortcutPath -parent $parent -name $name -targetPath $targetPath -defaultParent $defaultParent 
     # Skip creating a shortcut if the path is invalid
     if ($null -eq $shortcutPath) {
-        Write-Host "Error: invalid shortcut file path $shortcutPath"
         continue
     }
 

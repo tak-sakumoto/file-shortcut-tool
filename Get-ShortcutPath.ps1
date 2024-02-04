@@ -13,6 +13,12 @@ function Get-ShortcutPath {
     # Convert the parent path to an absolute path
     $parent = (Resolve-Path -Path $parent).Path
 
+    # Return null if the parent path is invalid
+    if (!(Test-Path -IsValid -Path $parent -PathType Container)) {
+        Write-Host "Error: invalid parent path $parent"
+        return $null
+    }
+
     # Get the leaf of the target path if it is not listed in the CSV file
     if([string]::IsNullOrEmpty($name)){
         $name = (Split-Path -Leaf $targetPath)
@@ -22,7 +28,8 @@ function Get-ShortcutPath {
     $shortcutPath = $parent + "\" + $name + ".lnk"
 
     # Return null if the shortcut path is invalid
-    if (!(Test-Path -Path $shortcutPath -IsValid)) {
+    if (!(Test-Path -IsValid -Path $shortcutPath -PathType Leaf)) {
+        Write-Host "Error: invalid shortcut file path $shortcutPath"
         return $null
     }
 
