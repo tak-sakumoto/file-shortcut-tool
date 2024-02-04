@@ -23,6 +23,9 @@ foreach ($line in $data) {
     $parent = $line.Parent
     $name = $line.Name
     
+    # Remove invalid characters from the name
+    $name = $name -replace '[\\\/\:\*\?\"\<\>\|]', '_'
+    
     # Create the shortcut
     $urlShortcutFlg = $false
     if ($targetPath -like "http://*" -or $targetPath -like "https://*") {
