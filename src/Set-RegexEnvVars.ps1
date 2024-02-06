@@ -1,5 +1,5 @@
 # Function to replace a string with environment variables that matches the regular expression
-function Set-Regex-Env-Vars {
+function Set-RegexEnvVars {
     param (
         [string]$str,
         [string]$pattern

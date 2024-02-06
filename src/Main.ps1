@@ -5,16 +5,37 @@ param (
 )
 
 # Dot sourcing
-. .\new_shortcut.ps1
-. .\set_regex_env_vars.ps1
-. .\Get-ShortcutPath.ps1
+. "$PSScriptRoot\New-Shortcut.ps1"
+. "$PSScriptRoot\Set-RegexEnvVars.ps1"
+. "$PSScriptRoot\Get-ShortcutPath.ps1"
+
+# Check if the list path is empty
+if ([string]::IsNullOrEmpty($listPath)) {
+    # Display an error message and exit with a non-zero code
+    Write-Host "Error: CSV file parameter is empty"
+    exit 1
+}
+
+# Check if the list path is invalid
+if (!(Test-Path $listPath)) {
+    # Display an error message and exit with a non-zero code
+    Write-Host "Error: $listPath does not exist"
+    exit 1
+}
+
+# Check if the default parent path is invalid
+if (!(Test-Path $defaultParent)) {
+    # Display an error message and exit with a non-zero code
+    Write-Host "Error: $defaultParent does not exist"
+    exit 1
+}
 
 # Get listed paths
 $data = Import-Csv -Path $listPath
 
 # Pattern for environment variables
-$env_var_pattern = '%([A-Za-z0-9_]*)%'
-$ps_env_var_pattern = '\$env:([A-Za-z0-9_]*)'
+$envVarPattern = '%([A-Za-z0-9_]*)%'
+$psEnvVarPattern = '\$env:([A-Za-z0-9_]*)'
 
 # Create shortcuts for each path
 foreach ($line in $data) {
@@ -34,9 +55,9 @@ foreach ($line in $data) {
 
     # Replace environment variables in paths retrieved from CSV files with values
     foreach (
-        $pattern in @($env_var_pattern, $ps_env_var_pattern)
+        $pattern in @($envVarPattern, $psEnvVarPattern)
     ) {
-        $targetPath = Set-Regex-Env-Vars -str $targetPath -pattern $pattern
+        $targetPath = Set-RegexEnvVars -str $targetPath -pattern $pattern
     }
 
     # Do not create the shortcut if the target path is invalid 
@@ -55,3 +76,6 @@ foreach ($line in $data) {
     # Create the shortcut
     New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
 }
+
+# Exit with a success code
+exit 0
