@@ -5,9 +5,9 @@ param (
 )
 
 # Dot sourcing
-. .\New-Shortcut.ps1
-. .\Set-RegexEnvVars.ps1
-. .\Get-ShortcutPath.ps1
+. "$PSScriptRoot\New-Shortcut.ps1"
+. "$PSScriptRoot\Set-RegexEnvVars.ps1"
+. "$PSScriptRoot\Get-ShortcutPath.ps1"
 
 # Check if the list path is empty
 if ([string]::IsNullOrEmpty($listCsv)) {
