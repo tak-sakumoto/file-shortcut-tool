@@ -10,16 +10,16 @@ param (
 . "$PSScriptRoot\Get-ShortcutPath.ps1"
 
 # Check if the list path is empty
-if ([string]::IsNullOrEmpty($listCsv)) {
+if ([string]::IsNullOrEmpty($listPath)) {
     # Display an error message and exit with a non-zero code
     Write-Host "Error: CSV file parameter is empty"
     exit 1
 }
 
 # Check if the list path is invalid
-if (!(Test-Path $listCsv)) {
+if (!(Test-Path $listPath)) {
     # Display an error message and exit with a non-zero code
-    Write-Host "Error: $listCsv does not exist"
+    Write-Host "Error: $listPath does not exist"
     exit 1
 }
 
