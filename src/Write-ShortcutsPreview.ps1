@@ -2,9 +2,9 @@ function Write-ShortcutsPreview {
     param (
         $shortcutList
     )
-    Write-Host "[Target path] -> [Shortcut path]"
+    Write-Host "[Shortcut path] -> [Target]"
     Write-Host "--------------------------------"
     foreach ($pair in $shortcutList) {
-        Write-Host "$($pair.targetPath) -> $($pair.shortcutPath)"
+        Write-Host "$($pair.shortcutPath) -> $($pair.target)"
     }
 }

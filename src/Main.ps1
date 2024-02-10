@@ -60,7 +60,7 @@ if ($preview) {
 # Create the shortcut
 foreach ($pair in $shortcutList) {
     # Create the shortcut
-    New-Shortcut -targetPath $pair.targetPath -shortcutPath $pair.shortcutPath
+    New-Shortcut -target $pair.target -shortcutPath $pair.shortcutPath
 }
 
 Write-Host "Done"

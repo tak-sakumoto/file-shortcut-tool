@@ -74,12 +74,12 @@ Describe "Main.ps1" {
         It "Should skip creating the shortcut" {
             # Arrange
             $listPath = "$listDirPath\list.csv"
-            $targetPath = "$targetsDirPath\absent.txt"
+            $target = "$targetsDirPath\absent.txt"
             $parent = $defaultParent
             $name = "shortcut"
             $data = @(
                 [PSCustomObject]@{
-                    Path = $targetPath
+                    Target = $target
                     Parent = $parent
                     Name = $name
                 }
@@ -100,18 +100,18 @@ Describe "Main.ps1" {
         It "Should create the shortcut" {
             # Arrange
             $listPath = "$listDirPath\list.csv"
-            $targetPath = "$targetsDirPath\valid.txt"
+            $target = "$targetsDirPath\valid.txt"
             $parent = $defaultParent
             $name = "shortcut"
             $data = @(
                 [PSCustomObject]@{
-                    Path = $targetPath
+                    Target = $target
                     Parent = $parent
                     Name = $name
                 }
             )
             $data | Export-Csv -Path $listPath -NoTypeInformation
-            New-Item -Path $targetPath -ItemType File -Force
+            New-Item -Path $target -ItemType File -Force
             
             # Act
             & $targetScript -listPath $listPath -defaultParent $defaultParent
@@ -127,18 +127,18 @@ Describe "Main.ps1" {
         It "Should display the preview and create the shortcuts when confirmed" {
             # Arrange
             $listPath = "$listDirPath\list.csv"
-            $targetPath = "$targetsDirPath\valid.txt"
+            $target = "$targetsDirPath\valid.txt"
             $parent = $defaultParent
             $name = "shortcut"
             $data = @(
                 [PSCustomObject]@{
-                    Path = $targetPath
+                    Target = $target
                     Parent = $parent
                     Name = $name
                 }
             )
             $data | Export-Csv -Path $listPath -NoTypeInformation
-            New-Item -Path $targetPath -ItemType File -Force
+            New-Item -Path $target -ItemType File -Force
 
             # Mock Read-Host to simulate user input
             Mock Read-Host { "y" }
@@ -155,18 +155,18 @@ Describe "Main.ps1" {
         It "Should cancel the operation when preview is not confirmed" {
             # Arrange
             $listPath = "$listDirPath\list.csv"
-            $targetPath = "$targetsDirPath\valid.txt"
+            $target = "$targetsDirPath\valid.txt"
             $parent = $defaultParent
             $name = "shortcut"
             $data = @(
                 [PSCustomObject]@{
-                    Path = $targetPath
+                    Target = $target
                     Parent = $parent
                     Name = $name
                 }
             )
             $data | Export-Csv -Path $listPath -NoTypeInformation
-            New-Item -Path $targetPath -ItemType File -Force
+            New-Item -Path $target -ItemType File -Force
 
             # Mock Read-Host to simulate user input
             Mock Read-Host { "n" }
