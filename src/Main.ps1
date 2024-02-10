@@ -1,17 +1,19 @@
 # Arguments
 param (
     [string]$listPath,
-    [string]$defaultParent = ".\"
+    [string]$defaultParent = ".\",
+    [switch]$preview
 )
 
 # Constants
 . "$PSScriptRoot\Set-ConstsExitCodesMain.ps1"
-. "$PSScriptRoot\Set-ConstsRegexPatterns.ps1"
 
 # Dot sourcing
 . "$PSScriptRoot\New-Shortcut.ps1"
 . "$PSScriptRoot\Set-RegexEnvVars.ps1"
-. "$PSScriptRoot\Get-ShortcutPath.ps1"
+. "$PSScriptRoot\Get-ShortcutList.ps1"
+. "$PSScriptRoot\Write-ShortcutsPreview.ps1"
+. "$PSScriptRoot\Get-YesFromUser.ps1"
 
 # Check if the list path is empty
 if ([string]::IsNullOrEmpty($listPath)) {
@@ -35,47 +37,33 @@ if (!(Test-Path $defaultParent)) {
 }
 
 # Get listed paths
-$data = Import-Csv -Path $listPath
+$csvData = Import-Csv -Path $listPath
 
-# Create shortcuts for each path
-foreach ($line in $data) {
-    # Set the target path, parent, and name variables from the CSV file
-    $targetPath = $line.Path
-    $parent = $line.Parent
-    $name = $line.Name
+# Get a list of shortcuts
+$shortcutList = Get-ShortcutList -CsvData $csvData -defaultParent $defaultParent
 
-    # Remove invalid characters from the name
-    $name = $name -replace $PATTERN_INVALID_NAME_CHARS, '_'
-    
-    # Create the shortcut
-    $urlShortcutFlg = $false
-    if ($targetPath -like "http://*" -or $targetPath -like "https://*") {
-        $urlShortcutFlg = $true
+# Preview the shortcuts at once
+if ($preview) {
+    # Display the preview
+    Write-Host "Preview the shortcuts"
+    Write-ShortcutsPreview -shortcutList $shortcutList
+    Write-Host 
+
+    # Confirm the preview
+    if (!(Get-YesFromUser -Message 'Do you want to create the shortcuts?')) {
+        Write-Host "Canceled"
+        exit $EXIT_SUCCESS_PREVIEW_CANCEL
     }
-
-    # Replace environment variables in paths retrieved from CSV files with values
-    foreach (
-        $pattern in @($PATTERN_ENV_VARS, $PATTERN_PS_ENV_VARS)
-    ) {
-        $targetPath = Set-RegexEnvVars -str $targetPath -pattern $pattern
-    }
-
-    # Do not create the shortcut if the target path is invalid 
-    if (!($urlShortcutFlg) -and !(Test-Path -Path $targetPath)) {
-        Write-Host "Error: invalid target path $targetPath"
-        continue
-    }
-
-    # Get the shortcut path
-    $shortcutPath = Get-ShortcutPath -parent $parent -name $name -targetPath $targetPath -defaultParent $defaultParent 
-    # Skip creating a shortcut if the path is invalid
-    if ($null -eq $shortcutPath) {
-        continue
-    }
-
-    # Create the shortcut
-    New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
+    Write-Host
 }
+
+# Create the shortcut
+foreach ($pair in $shortcutList) {
+    # Create the shortcut
+    New-Shortcut -targetPath $pair.targetPath -shortcutPath $pair.shortcutPath
+}
+
+Write-Host "Done"
 
 # Exit with a success code
 exit $EXIT_SUCCESS

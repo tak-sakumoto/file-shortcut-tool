@@ -17,8 +17,16 @@ Describe "Main.ps1" {
         New-Item -Path $defaultParent -ItemType Directory -Force
         $targetsDirPath = "$testDirPath\targets"
         New-Item -Path $targetsDirPath -ItemType Directory -Force
+
+        $shortcutPath = ""
     }
     
+    AfterEach {
+        if (Test-Path $shortcutPath) {
+            Remove-Item -Path $shortcutPath -Force
+        }
+    }
+
     Context "When the list path is empty" {
         It "Should exit with a non-zero code" {
             # Arrange
@@ -112,6 +120,64 @@ Describe "Main.ps1" {
             $LASTEXITCODE | Should -Be $EXIT_SUCCESS
             $shortcutPath = "$parent\$name.lnk"
             $shortcutPath | Should -Exist
+        }
+    }
+
+    Context "When running in preview mode" {
+        It "Should display the preview and create the shortcuts when confirmed" {
+            # Arrange
+            $listPath = "$listDirPath\list.csv"
+            $targetPath = "$targetsDirPath\valid.txt"
+            $parent = $defaultParent
+            $name = "shortcut"
+            $data = @(
+                [PSCustomObject]@{
+                    Path = $targetPath
+                    Parent = $parent
+                    Name = $name
+                }
+            )
+            $data | Export-Csv -Path $listPath -NoTypeInformation
+            New-Item -Path $targetPath -ItemType File -Force
+
+            # Mock Read-Host to simulate user input
+            Mock Read-Host { "y" }
+
+            # Act
+            & $targetScript -listPath $listPath -defaultParent $defaultParent -preview
+
+            # Assert
+            $LASTEXITCODE | Should -Be $EXIT_SUCCESS
+            $shortcutPath = "$parent\$name.lnk"
+            $shortcutPath | Should -Exist
+        }
+
+        It "Should cancel the operation when preview is not confirmed" {
+            # Arrange
+            $listPath = "$listDirPath\list.csv"
+            $targetPath = "$targetsDirPath\valid.txt"
+            $parent = $defaultParent
+            $name = "shortcut"
+            $data = @(
+                [PSCustomObject]@{
+                    Path = $targetPath
+                    Parent = $parent
+                    Name = $name
+                }
+            )
+            $data | Export-Csv -Path $listPath -NoTypeInformation
+            New-Item -Path $targetPath -ItemType File -Force
+
+            # Mock Read-Host to simulate user input
+            Mock Read-Host { "n" }
+
+            # Act
+            & $targetScript -listPath $listPath -defaultParent $defaultParent -preview
+
+            # Assert
+            $LASTEXITCODE | Should -Be $EXIT_SUCCESS_PREVIEW_CANCEL
+            $shortcutPath = "$parent\$name.lnk"
+            $shortcutPath | Should -Not -Exist
         }
     }
 
