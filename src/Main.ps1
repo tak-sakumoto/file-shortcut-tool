@@ -37,7 +37,10 @@ if (!(Test-Path $defaultParent)) {
 # Get listed paths
 $data = Import-Csv -Path $listPath
 
-# Create shortcuts for each path
+# Create a list of shortcuts
+$shortcutList = @()
+
+# Make a list of shortcuts from the CSV file
 foreach ($line in $data) {
     # Set the target path, parent, and name variables from the CSV file
     $targetPath = $line.Path
@@ -72,9 +75,18 @@ foreach ($line in $data) {
     if ($null -eq $shortcutPath) {
         continue
     }
+    
+    # Add the shortcut to the list
+    $shortcutList += @(@{
+        targetPath = $targetPath
+        shortcutPath = $shortcutPath
+    })
+}
 
+# Create the shortcut
+foreach ($tupple in $shortcutList) {
     # Create the shortcut
-    New-Shortcut -targetPath $targetPath -shortcutPath $shortcutPath
+    New-Shortcut -targetPath $tupple.targetPath -shortcutPath $tupple.shortcutPath
 }
 
 # Exit with a success code
