@@ -4,6 +4,9 @@ param (
     [string]$defaultParent = ".\"
 )
 
+# Constants
+"$PSScriptRoot\Set-ConstsForMain.ps1"
+
 # Dot sourcing
 . "$PSScriptRoot\New-Shortcut.ps1"
 . "$PSScriptRoot\Set-RegexEnvVars.ps1"
@@ -13,21 +16,21 @@ param (
 if ([string]::IsNullOrEmpty($listPath)) {
     # Display an error message and exit with a non-zero code
     Write-Host "Error: CSV file parameter is empty"
-    exit 1
+    exit $EXIT_PARAM_CSV_EMPTY
 }
 
 # Check if the list path is invalid
 if (!(Test-Path $listPath)) {
     # Display an error message and exit with a non-zero code
     Write-Host "Error: $listPath does not exist"
-    exit 1
+    exit $EXIT_PARAM_CSV_INVALID
 }
 
 # Check if the default parent path is invalid
 if (!(Test-Path $defaultParent)) {
     # Display an error message and exit with a non-zero code
     Write-Host "Error: $defaultParent does not exist"
-    exit 1
+    exit $EXIT_PARAM_PARENT_INVALID
 }
 
 # Get listed paths
@@ -78,4 +81,4 @@ foreach ($line in $data) {
 }
 
 # Exit with a success code
-exit 0
+exit $EXIT_SUCCESS

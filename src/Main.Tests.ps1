@@ -2,6 +2,9 @@ Import-Module Pester
 
 Describe "Main.ps1" {
     BeforeAll {
+        # Constants
+        "$PSScriptRoot\Set-ConstsForMain.ps1"
+
         # Target script
         $targetScript = "$PSScriptRoot\..\src\Main.ps1"
 
@@ -25,7 +28,7 @@ Describe "Main.ps1" {
             & $targetScript -listPath $listPath
                     
             # Assert
-            $LASTEXITCODE | Should -Be 1
+            $LASTEXITCODE | Should -Be $EXIT_PARAM_CSV_EMPTY
         }
     }
 
@@ -40,7 +43,7 @@ Describe "Main.ps1" {
             & $targetScript -listPath $listPath
             
             # Assert
-            $LASTEXITCODE | Should -Be 1
+            $LASTEXITCODE | Should -Be $EXIT_PARAM_CSV_INVALID
         }
     }
 
@@ -48,13 +51,14 @@ Describe "Main.ps1" {
         It "Should exit with a non-zero code" {
             # Arrange
             $listPath = "$listDirPath\list.csv"
+            New-Item -Path $listPath
             $defaultParent = "$testDirPath\absent"
             
             # Act
             & $targetScript -listPath $listPath -defaultParent $defaultParent
 
             # Assert
-            $LASTEXITCODE | Should -Be 1
+            $LASTEXITCODE | Should -Be $EXIT_PARAM_PARENT_INVALID
         }
     }
     
@@ -78,7 +82,7 @@ Describe "Main.ps1" {
             & $targetScript -listPath $listPath -defaultParent $defaultParent
             
             # Assert
-            $LASTEXITCODE | Should -Be 0
+            $LASTEXITCODE | Should -Be $EXIT_SUCCESS
             $shortcutPath = "$parent\$name.lnk"
             $shortcutPath | Should -Not -Exist
         }
@@ -105,7 +109,7 @@ Describe "Main.ps1" {
             & $targetScript -listPath $listPath -defaultParent $defaultParent
 
             # Assert
-            $LASTEXITCODE | Should -Be 0
+            $LASTEXITCODE | Should -Be $EXIT_SUCCESS
             $shortcutPath = "$parent\$name.lnk"
             $shortcutPath | Should -Exist
         }
