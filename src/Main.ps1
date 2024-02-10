@@ -1,7 +1,8 @@
 # Arguments
 param (
     [string]$listPath,
-    [string]$defaultParent = ".\"
+    [string]$defaultParent = ".\",
+    [switch]$preview
 )
 
 # Constants
@@ -39,8 +40,6 @@ $data = Import-Csv -Path $listPath
 
 # Create a list of shortcuts
 $shortcutList = @()
-
-# Make a list of shortcuts from the CSV file
 foreach ($line in $data) {
     # Set the target path, parent, and name variables from the CSV file
     $targetPath = $line.Path
@@ -83,11 +82,40 @@ foreach ($line in $data) {
     })
 }
 
-# Create the shortcut
-foreach ($tupple in $shortcutList) {
-    # Create the shortcut
-    New-Shortcut -targetPath $tupple.targetPath -shortcutPath $tupple.shortcutPath
+# Preview the shortcuts at once
+if ($preview) {
+    # Display the preview
+    Write-Host "Preview the shortcuts"
+    Write-Host "[Target path] -> [Shortcut path]"
+    Write-Host "--------------------------------"
+    foreach ($pair in $shortcutList) {
+        Write-Host "$($pair.targetPath) -> $($pair.shortcutPath)"
+    }
+    Write-Host 
+
+    # Confirm the preview
+    $confirmation = Read-Host "Do you want to create the shortcuts? (y/n)"
+    while (1) {
+        if ($confirmation -eq "y") {
+            break
+        } elseif ($confirmation -eq "n") {
+            Write-Host "Canceled"
+            exit $EXIT_SUCCESS_PREVIEW_CANCEL
+        } else {
+            $confirmation = Read-Host "Please enter y or n"
+        }
+    }
 }
+
+Write-Host
+
+# Create the shortcut
+foreach ($pair in $shortcutList) {
+    # Create the shortcut
+    New-Shortcut -targetPath $pair.targetPath -shortcutPath $pair.shortcutPath
+}
+
+Write-Host "Done"
 
 # Exit with a success code
 exit $EXIT_SUCCESS
