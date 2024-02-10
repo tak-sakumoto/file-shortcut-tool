@@ -32,7 +32,7 @@ The key features of this tool are as follows:
 ### List (CSV)
 
 ```csv
-Path,Parent,Name
+Path,Target,Name
 \path\to\file_A,\path\to\folder_B,
 \path\to\folder_C,,Dir_C
 https://example.com,,
