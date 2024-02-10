@@ -5,7 +5,8 @@ param (
 )
 
 # Constants
-"$PSScriptRoot\Set-ConstsForMain.ps1"
+. "$PSScriptRoot\Set-ConstsExitCodesMain.ps1"
+. "$PSScriptRoot\Set-ConstsRegexPatterns.ps1"
 
 # Dot sourcing
 . "$PSScriptRoot\New-Shortcut.ps1"
@@ -36,19 +37,15 @@ if (!(Test-Path $defaultParent)) {
 # Get listed paths
 $data = Import-Csv -Path $listPath
 
-# Pattern for environment variables
-$envVarPattern = '%([A-Za-z0-9_]*)%'
-$psEnvVarPattern = '\$env:([A-Za-z0-9_]*)'
-
 # Create shortcuts for each path
 foreach ($line in $data) {
     # Set the target path, parent, and name variables from the CSV file
     $targetPath = $line.Path
     $parent = $line.Parent
     $name = $line.Name
-    
+
     # Remove invalid characters from the name
-    $name = $name -replace '[\\\/\:\*\?\"\<\>\|]', '_'
+    $name = $name -replace $PATTERN_INVALID_NAME_CHARS, '_'
     
     # Create the shortcut
     $urlShortcutFlg = $false
@@ -58,7 +55,7 @@ foreach ($line in $data) {
 
     # Replace environment variables in paths retrieved from CSV files with values
     foreach (
-        $pattern in @($envVarPattern, $psEnvVarPattern)
+        $pattern in @($PATTERN_ENV_VARS, $PATTERN_PS_ENV_VARS)
     ) {
         $targetPath = Set-RegexEnvVars -str $targetPath -pattern $pattern
     }

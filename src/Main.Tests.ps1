@@ -3,7 +3,7 @@ Import-Module Pester
 Describe "Main.ps1" {
     BeforeAll {
         # Constants
-        "$PSScriptRoot\Set-ConstsForMain.ps1"
+        . "$PSScriptRoot\..\src\Set-ConstsExitCodesMain.ps1"
 
         # Target script
         $targetScript = "$PSScriptRoot\..\src\Main.ps1"
